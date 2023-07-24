@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pdf compare</title>
+</head>
+<body>
+<header class="main-header">
+  <nav class="main-header__nav">
+    <h1>Compare the pdf's</h1>
+  </nav>
+</header>
+<main>
+  <p>Here you can upload your pdf files and get the comparison report!!</p>
+  <form method="post" enctype="multipart/form-data">
+    <div class="main-div-inputbox">
+      <div class="input-container">
+        <label for="first-file" class="file-input-label">
+          <span class="first-file"></span>
+          <input type="file" name="file1" id="first-file" class="file-input" accept=".pdf" />
+        </label>
+      </div>
+      <div class="input-container">
+        <label for="second-file" class="file-input-label">
+          <span class="second-file"></span>
+          <input type="file" name="file2" id="second-file" class="file-input" accept=".pdf" />
+        </label>
+      </div>
+    </div>
+    <div class="submit-container">
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+</main>
+</body>
+<script src="../script.js"></script>
+<link rel="stylesheet" href="main.css">
+</html>
