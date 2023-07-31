@@ -1,3 +1,0 @@
-Hello, this is a preview file created by pipi.py!
-You can use this file to store some preview data.
-Feel free to modify or extend it as needed.
