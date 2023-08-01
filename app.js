@@ -63,24 +63,34 @@ app.post('/',  upload.fields([{ name: 'file1' }, { name: 'file2' }]), async (req
     // }
 
     // Handle form submission and file uploads here
-    res.send(`Form submitted and files uploaded successfully: ${JSON.stringify(files)}`);
+    // res.send(`Form submitted and files uploaded successfully: ${JSON.stringify(files)}`);
 
     const childPy = spawn('python', ['all_in_one.py']);
 
+    let stdoutData = '';
+    let stderrData = '';
+
     childPy.stdout.on('data', (data) => {
+        stdoutData += data;
         console.log(`stdout: ${data}`);
     });
 
     childPy.stderr.on('data', (data) => {
+        stderrData += data;
         console.error(`stderr: ${data}`);
     });
 
     childPy.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
+        // Send the Python output and errors back to the client
+        res.send(`
+            Form submitted and files uploaded successfully: ${JSON.stringify(files)}
+            Python Output:
+            ${stdoutData}
+
+        `);
     });
-
 });
-
 
 app.listen(3001, () => {
     console.log('Server listening on port 3001');

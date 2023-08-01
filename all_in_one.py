@@ -13,6 +13,10 @@ import re
 from pdfminer.high_level import extract_text
 
 # both
+import time
+
+start_time = time.process_time()
+
 
 
 def extract_numbers(string):
@@ -30,7 +34,7 @@ def extract_numbers(string):
 # for cnd
 pdf_path = 'uploads/first.pdf'
 
-images = convert_from_path(pdf_path)
+images = convert_from_path(pdf_path, poppler_path='poppler-23.05.0/Library/bin')
 
 reader = easyocr.Reader(['en'], gpu=False)
 
@@ -62,7 +66,7 @@ for result in cnd_results:
     cnd_text += result[1]+" "
 
 
-print(cnd_text)
+# print(cnd_text)
 
 # for cnd
 
@@ -70,7 +74,7 @@ print(cnd_text)
 
 pdf_path = 'uploads/second.pdf'
 
-images = convert_from_path(pdf_path)
+images = convert_from_path(pdf_path, poppler_path='poppler-23.05.0/Library/bin')
 
 reader = easyocr.Reader(['en'], gpu=False)
 
@@ -85,10 +89,11 @@ for image in images:
 # 35' /40'-5
 
 
-for j in range(i-1):
+for j in range(1):  # for j in range(i-1):
 
     # Open the PNG image
-    image = Image.open(f"uploads/{j}.jpg")
+    # image = Image.open(f"uploads/{j}.jpg")
+    image = Image.open(f"uploads/0.jpg")
 
     image_results = reader.readtext(f"uploads/{j}.jpg")
 
@@ -99,7 +104,7 @@ for result in ocl_results:
     # print(result[1])
     ocl_text += result[1]+" "
 
-print(ocl_text)
+# print(ocl_text)
 # both
 
 
@@ -271,10 +276,12 @@ def extract_parameters_from_ocl(text):
 
 # Example usage
 parameters = extract_parameters_from_con(cnd_text)
+print("Con")
 print(parameters)
 
 # Example usage
 parameters2 = extract_parameters_from_ocl(ocl_text)
+print("Ocl")
 print(parameters2)
 
 # print(re.compile(r"[345][05]").findall(parameters))
@@ -283,16 +290,18 @@ print(parameters2)
 # print(re.compile(r"[345][05]").findall(parameters2))
 # print(re.compile(r"[12345h]").findall(parameters2))
 
-con_pole_length1 = float(re.compile(
-    r"[345][05]").findall(parameters['pole_length'][0])[0])
-print(parameters['pole_length'])
-if (len(parameters['pole_length'][0]) > 1):
-    print("len is > 1")
-    con_pole_length2 = float(re.compile(
-        r"[345][05]").findall(parameters['pole_length'][0])[1])
+lenoutputs = re.compile(
+    r"[345][05]").findall(parameters['pole_length'][0])
+
+if (len(lenoutputs)  >= 1):
+    con_pole_length1 = float(lenoutputs[0])
+# print(parameters['pole_length'])
+if (len(lenoutputs) > 1):
+    # print("len is > 1")
+    con_pole_length2 = float(lenoutputs[1])
 else:
-    print("len is <= 1")
-    con_pole_length2 = con_pole_length1
+    # print("len is <= 1")
+    con_pole_length2 = float(con_pole_length1)
 
 con_pole_class = float(re.compile(
     r"[12345h]").findall(parameters['pole_class'][0])[-1])
@@ -324,31 +333,39 @@ else:
 
 
 # print(f"con depth: {con_pole_depth}")
-print(ocl_pole_depth)
-print(bool_for_depth)
-print((con_pole_length1 - ocl_pole_length)/ocl_pole_length)
-print(con_pole_length1)
-print(con_pole_length2)
-print(f"class: {con_pole_class}")
-print(ocl_pole_class)
-print(ocl_pole_length)
+# print(ocl_pole_depth)
+# print(bool_for_depth)
+# print((con_pole_length1 - ocl_pole_length)/ocl_pole_length)
+# print(con_pole_length1)
+# print(con_pole_length2)
+# print(f"class: {con_pole_class}")
+# print(ocl_pole_class)
+# print(ocl_pole_length)
 
 
 if (abs(con_pole_length1 - ocl_pole_length)/ocl_pole_length <= 0.05):
     bool_for_length = True
 
 
-print((con_pole_length2 - ocl_pole_length)/ocl_pole_length)
+# print((con_pole_length2 - ocl_pole_length)/ocl_pole_length)
+print(ocl_pole_length)
+print(con_pole_length2)
+
 if (abs(con_pole_length2 - ocl_pole_length)/ocl_pole_length <= 0.05):
     bool_for_length = True
 
 if (ocl_pole_class == con_pole_class):
     bool_for_class = True
-print(bool_for_length)
-print(bool_for_class)
-print(bool_for_depth)
+print(f"pole length: {bool_for_length}")
+print(f"pole class: {bool_for_class}")
+print(f"setting depth: {bool_for_depth}")
 
 if (bool_for_class & bool_for_length & bool_for_depth):
-    print("passed")
+    print("PASSED")
 else:
-    print("failed")
+    print("FAILED")
+
+end_time = time.process_time()
+execution_time = end_time - start_time
+
+print(f"Execution time: {execution_time:.6f} seconds")

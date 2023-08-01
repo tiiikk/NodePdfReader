@@ -23,3 +23,12 @@ dropZones.forEach(dropZone => {
     });
 });
 
+function hideLoadingScreen() {
+    const loadingScreen = document.querySelector('.waiting_text');
+    loadingScreen.style.display = 'none';
+}
+function showLoadingScreen() {
+    const loadingScreen = document.querySelector('.waiting_text');
+    loadingScreen.style.display = 'block';
+}
+
