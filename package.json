@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "build": "npm install && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+    "heroku-postbuild": "npm run build"
   },
   "keywords": [],
   "author": "tik_22",
