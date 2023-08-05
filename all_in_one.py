@@ -1,5 +1,5 @@
 # for cnd
-import easyocr
+# import easyocr
 from pdf2image import convert_from_path
 from PIL import Image
 
