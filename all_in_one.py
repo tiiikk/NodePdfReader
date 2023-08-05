@@ -276,13 +276,13 @@ def extract_parameters_from_ocl(text):
 
 # Example usage
 parameters = extract_parameters_from_con(cnd_text)
-print("Con")
-print(parameters)
+# print("Con")
+# print(parameters)
 
 # Example usage
 parameters2 = extract_parameters_from_ocl(ocl_text)
-print("Ocl")
-print(parameters2)
+# print("Ocl")
+# print(parameters2)
 
 # print(re.compile(r"[345][05]").findall(parameters))
 # print(re.compile(r"[345][05]").findall(parameters))
@@ -348,17 +348,17 @@ if (abs(con_pole_length1 - ocl_pole_length)/ocl_pole_length <= 0.05):
 
 
 # print((con_pole_length2 - ocl_pole_length)/ocl_pole_length)
-print(ocl_pole_length)
-print(con_pole_length2)
+# print(ocl_pole_length)
+# print(con_pole_length2)
 
 if (abs(con_pole_length2 - ocl_pole_length)/ocl_pole_length <= 0.05):
     bool_for_length = True
 
 if (ocl_pole_class == con_pole_class):
     bool_for_class = True
-print(f"pole length: {bool_for_length}")
-print(f"pole class: {bool_for_class}")
-print(f"setting depth: {bool_for_depth}")
+print(f"pole length: {bool_for_length}, ")
+print(f"pole class: {bool_for_class}, ")
+print(f"setting depth: {bool_for_depth}, ")
 
 if (bool_for_class & bool_for_length & bool_for_depth):
     print("PASSED")

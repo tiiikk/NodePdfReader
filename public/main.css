@@ -9,7 +9,19 @@ body {
     background-color: black;
 }
 
+h3{
+    color: darkgoldenrod;
+    font-size: large;
+    font-style: italic;
+}
+
 p {
+    color: greenyellow;
+    font-size: large;
+    font-style: italic;
+}
+
+h5{
     color: darkgoldenrod;
     font-size: large;
     font-style: italic;
@@ -86,4 +98,15 @@ button {
     text-decoration: none;
     display: inline-block;
     font-size: 15px;
+}
+
+
+.hidden {
+    display: none;
+}
+
+#warning {
+    color: red;
+    font-size: 14px;
+    margin-top: 0.5rem;
 }

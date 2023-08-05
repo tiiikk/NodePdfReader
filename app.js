@@ -1,10 +1,13 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const { spawn } = require('child_process');
-// const { readFile } = require('fs/promises');
-// const { appendFile } = require('fs/promises');
+
+const uploadsFolder = path.join(__dirname, 'uploads');
+
+
 
 const app = express();
 
@@ -69,7 +72,6 @@ app.post('/',  upload.fields([{ name: 'file1' }, { name: 'file2' }]), async (req
 
     let stdoutData = '';
     let stderrData = '';
-
     childPy.stdout.on('data', (data) => {
         stdoutData += data;
         console.log(`stdout: ${data}`);
@@ -83,13 +85,28 @@ app.post('/',  upload.fields([{ name: 'file1' }, { name: 'file2' }]), async (req
     childPy.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
         // Send the Python output and errors back to the client
-        res.send(`
-            Form submitted and files uploaded successfully: ${JSON.stringify(files)}
-            Python Output:
-            ${stdoutData}
+        res.send(`The files you compared\`: ${JSON.stringify(files[0]['originalname'])} - ${JSON.stringify(files[1]['originalname'])} \n The comparision results: \n${stdoutData.trim()}`);
+        //deleteing the files in uploads directory after sending response
 
-        `);
+        fs.readdir(uploadsFolder, (err, files) => {
+            if (err) {
+                console.error('Error reading directory:', err);
+                return;
+            }
+
+            files.forEach(file => {
+                const filePath = path.join(uploadsFolder, file);
+                fs.unlink(filePath, err => {
+                    if (err) {
+                        console.error(`Error deleting file ${file}:`, err);
+                    }
+                });
+            });
+        });
     });
+
+
+
 });
 
 app.listen(3001, () => {

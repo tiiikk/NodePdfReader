@@ -12,11 +12,11 @@
   </nav>
 </header>
 <main>
-  <p>Here you can upload your pdf files and get the comparison report!!</p>
-<!--  <div class="waiting_text">-->
-<!--    <p> Your Pdf's are beaing compared, please wait...</p>-->
-<!--    <p> It can take up to 5 minutes</p>-->
-<!--  </div>-->
+  <h3>Here you can upload your pdf files and get the comparison report!!</h3>
+  <div class="waiting_text">
+    <h5 class="waiting_text"> Your Pdf's are beaing compared, please wait...</h5>
+    <h5 class="waiting_text"> It can take up to 5 minutes</h5>
+  </div>
 
   <form method="post" enctype="multipart/form-data">
     <div class="main-div-inputbox">
@@ -33,21 +33,21 @@
         </label>
       </div>
 <!--      <div class="input-container">-->
-<!--        <label for="second-file" class="file-input-label">-->
+      <!--        <label for="second-file" class="file-input-label">-->
 <!--          <span class="second-file"></span>-->
 <!--          <input type="file" name="file3" id="third-file" class="file-input" accept=".pdf" />-->
 <!--        </label>-->
 <!--      </div>-->
     </div>
     <div class="submit-container">
-      <button type="submit">Submit</button>
+      <button id="submit_btn" type="submit">Submit</button>
     </div>
+    <div id="warning" class="hidden"></div>
+    <div id="response" class="hidden"></div>
 
-
-    </div>
   </form>
 </main>
 </body>
-<script src="../script.js"></script>
+<script src="script.js"></script>
 <link rel="stylesheet" href="main.css">
 </html>
