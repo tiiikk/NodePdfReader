@@ -109,6 +109,6 @@ app.post('/',  upload.fields([{ name: 'file1' }, { name: 'file2' }]), async (req
 
 });
 
-app.listen(3001, () => {
-    console.log('Server listening on port 3001');
+app.listen(process.env.PORT || 3000, function () {
+    console.log("SERVER STARTED PORT: 3000");
 });
