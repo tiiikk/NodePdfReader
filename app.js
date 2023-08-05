@@ -88,21 +88,21 @@ app.post('/',  upload.fields([{ name: 'file1' }, { name: 'file2' }]), async (req
         res.send(`The files you compared\`: ${JSON.stringify(files[0]['originalname'])} - ${JSON.stringify(files[1]['originalname'])} \n The comparision results: \n${stdoutData.trim()}`);
         //deleteing the files in uploads directory after sending response
 
-        // fs.readdir(uploadsFolder, (err, files) => {
-        //     if (err) {
-        //         console.error('Error reading directory:', err);
-        //         return;
-        //     }
-        //
-        //     files.forEach(file => {
-        //         const filePath = path.join(uploadsFolder, file);
-        //         fs.unlink(filePath, err => {
-        //             if (err) {
-        //                 console.error(`Error deleting file ${file}:`, err);
-        //             }
-        //         });
-        //     });
-        // });
+        fs.readdir(uploadsFolder, (err, files) => {
+            if (err) {
+                console.error('Error reading directory:', err);
+                return;
+            }
+
+            files.forEach(file => {
+                const filePath = path.join(uploadsFolder, file);
+                fs.unlink(filePath, err => {
+                    if (err) {
+                        console.error(`Error deleting file ${file}:`, err);
+                    }
+                });
+            });
+        });
     });
 
 
