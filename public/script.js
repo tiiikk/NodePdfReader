@@ -31,6 +31,7 @@ dropZones.forEach(dropZone => {
 
 const firstFileInput = document.getElementById('first-file');
 const secondFileInput = document.getElementById('second-file');
+const thirdFileInput = document.getElementById('third-file')
 const warningDiv = document.getElementById('warning');
 
 wait_text.classList.add('hidden')
@@ -39,8 +40,8 @@ wait_text.classList.add('hidden')
 submit_btn.addEventListener('click', async event => {
     event.preventDefault();
 
-    if (!firstFileInput.value.trim() || !secondFileInput.value.trim()) {
-        warningDiv.textContent = 'Both input containers must not be empty. Please select files.';
+    if (!firstFileInput.value.trim() || !secondFileInput.value.trim() || !thirdFileInput.value.trim()) {
+        warningDiv.textContent = 'All input containers must not be empty. Please select files.';
         warningDiv.classList.remove('hidden');
     } else {
         // Hide warning message and show "waiting" text
@@ -53,6 +54,7 @@ submit_btn.addEventListener('click', async event => {
         const formData = new FormData();
         formData.append('file1', firstFileInput.files[0]);
         formData.append('file2', secondFileInput.files[0]);
+        formData.append('file3', thirdFileInput.files[0]);
 
         try {
             // Send a POST request to the server

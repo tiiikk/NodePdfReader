@@ -20,10 +20,9 @@ const storage = multer.diskStorage({
             filename = 'first.pdf';
         } else if (file.fieldname === 'file2') {
             filename = 'second.pdf';
-         }// else if (file.fieldname === 'file3'){
-        //     // Handle other cases or provide a default filename if needed
-        //     filename = 'third.pdf';
-        // }
+         } else if (file.fieldname === 'file3'){
+            filename = 'third.pdf';
+        }
         cb(null, filename);
     }
 });
@@ -41,7 +40,7 @@ app.get('/', (req, res) => {
 });
 // , {name: 'file3'}
 // Route for handling form submission and file uploads
-app.post('/',  upload.fields([{ name: 'file1' }, { name: 'file2' }]), async (req, res) => {
+app.post('/',  upload.fields([{ name: 'file1' }, { name: 'file2' }, {name: 'file3'}]), async (req, res) => {
     const files = [];
 
     if (req.files['file1']) {
@@ -57,13 +56,12 @@ app.post('/',  upload.fields([{ name: 'file1' }, { name: 'file2' }]), async (req
         };
         files.push(file2);
     }
-    // if (req.files['file3']) {
-    //     const file3 = {
-    //         originalname: req.files['file3'][0].originalname,
-    //         // filename: req.files['file2'][0].filename
-    //     };
-    //     files.push(file3);
-    // }
+    if (req.files['file3']) {
+        const file3 = {
+            originalname: req.files['file3'][0].originalname,
+        };
+        files.push(file3);
+    }
 
     // Handle form submission and file uploads here
     // res.send(`Form submitted and files uploaded successfully: ${JSON.stringify(files)}`);

@@ -12,11 +12,8 @@ import pdfminer
 import re
 from pdfminer.high_level import extract_text
 
+
 # both
-import time
-
-start_time = time.process_time()
-
 
 
 def extract_numbers(string):
@@ -24,17 +21,9 @@ def extract_numbers(string):
     return numbers
 
 
-# pole_length_values = ["30", "35", "40", "45", "50", "55"]
-# pole_class_values = ["1", "2", "3", "4", "5", "h1"]
-# setting_depth_values = ["6", "6.5", "7", "7.5", "8", "8.5", "9"]
-
-# pole_length_class_pattern = r"\d+'?(?:-\d+|\s\d+)"
-
-# OneDrive_1_7-22-2023/Con6-complex.pdf
-# for cnd
 pdf_path = 'uploads/first.pdf'
 
-images = convert_from_path(pdf_path, poppler_path='poppler-23.05.0/Library/bin')
+images = convert_from_path(pdf_path)
 
 reader = easyocr.Reader(['en'], gpu=False)
 
@@ -74,9 +63,9 @@ for result in cnd_results:
 
 pdf_path = 'uploads/second.pdf'
 
-images = convert_from_path(pdf_path, poppler_path='poppler-23.05.0/Library/bin')
+images = convert_from_path(pdf_path)
 
-reader = easyocr.Reader(['en'], gpu=False)
+# reader = easyocr.Reader(['en'], gpu=False)
 
 ocl_results = []
 
@@ -108,10 +97,80 @@ for result in ocl_results:
 # both
 
 
+def extract_parameters_from_est(text):
+
+    pole_length_class_regexes_est = [
+        re.compile(
+            r"[345][05]\s*'\s*,\s*CL\s*[12345h]"),
+    ]
+    pole_length_matches = pole_length_class_regexes_est[0].findall(text)
+    for reg in pole_length_class_regexes_est:
+        if (len(pole_length_matches) == 0 or pole_length_matches[0] == ''):
+            pole_length_matches = reg.findall(text)
+    if pole_length_matches:
+        pole_length = pole_length_matches
+        pole_class = pole_length_matches
+    else:
+#         print("length is none")
+        pole_length = None
+        pole_class = None
+    return {
+        "pole_length": pole_length,
+        "pole_class": pole_class
+    }
+
+
+# third est
+pdf_path = 'uploads/third.pdf'
+
+images = convert_from_path(pdf_path)
+
+# reader = easyocr.Reader(['en'], gpu=False)
+
+est_results = []
+
+i = 0
+
+for image in images:
+    image_path = f"uploads/est{i}.jpg"
+    image.save(image_path)
+    i += 1
+# 35' /40'-5
+
+
+for j in range(int(len(images)/2)):  # for j in range(i-1):
+
+    # Open the PNG image
+    image = Image.open(f"uploads/est{int(len(images))-j-1}.jpg")
+    # image = Image.open(f"uploads/0.jpg")
+
+    image_results = reader.readtext(f"uploads/est{int(len(images))-j-1}.jpg")
+#     print(f"reading:est{int(len(images))-j-1}.jpg")
+    est_results.extend(image_results)
+    text = ""
+
+    for result in est_results:
+        # print(result[1])
+        text += result[1]+" "
+    # print(text)
+    page_result_params = extract_parameters_from_est(text)
+    if (page_result_params['pole_length'] != None and page_result_params['pole_class'] != None):
+        est_pole_length_class = page_result_params['pole_length']
+        break
+    else:
+        est_pole_length_class = None
+
+
+est_text = ""
+for result in est_results:
+    # print(result[1])
+    est_text += result[1]+" "
+# print("est:")
+# print(est_pole_length_class)
+
+
 def extract_parameters_from_con(text):
-    # Regular expressions for different formats
-    # Order them by priority, as you mentioned    40'/45'-1   45 1
-    pole_length_class_regexes = [
+    pole_length_class_regexes_con = [
         re.compile(
             r"[345][05]\s*'\s*\/\s*[345][05]\s*'\s*-\s*[12345h]"),
         re.compile(
@@ -137,12 +196,16 @@ def extract_parameters_from_con(text):
         re.compile(
             r"[345]?[05]?\s*'?\s*\/?\s*[345][05]\s*'?\s*[\-_*]?CL?\s*[12345h]"),
         re.compile(
+            r"[345]?[05]?\s*'?\s*\/?\s*[345][05]\s*'?\s*[\-_*,]?CL?\s*[12345h]"),
+        re.compile(
             r"[345]?[05]?\s*'?\s*\/?\s*[345][05]\s*'?\s*[\-_*]\s*CL?\s*[12345h]"),
         # re.compile(
         #     r"[345]?[05]?\s*'?\s*\/?\s*[345][05]\s*'?\s*[\-_*]?\s*CL?\s*[12345h]"),
         re.compile(r"[345][05]\s*'\s*[\-_*]\s*[12345h]?"),
         re.compile(r"[345][05]\s*'?\s*[\-_*]\s*[12345h]?")
     ]
+    # Regular expressions for different formats
+    # Order them by priority, as you mentioned    40'/45'-1   45 1
 
     setting_depth_regexes = [re.compile(r"SET\s*[6-9][,.]?[05]?\s*'\s*DEEP"),
                              re.compile(r"SET\s*[6-9][,.]?[05]?\s*'?\s*DEEP"),
@@ -150,8 +213,8 @@ def extract_parameters_from_con(text):
                              re.compile(r"SET\s*[6-9][,.]?[05]?\s*'?\s*DEEP?"),
                              re.compile(r"SET?\s*[6-9][,.]?[05]?\s*'\s*DEEP?")]
 
-    pole_length_matches = pole_length_class_regexes[0].findall(text)
-    for reg in pole_length_class_regexes:
+    pole_length_matches = pole_length_class_regexes_con[0].findall(text)
+    for reg in pole_length_class_regexes_con:
         if (len(pole_length_matches) == 0 or pole_length_matches[0] == ''):
             pole_length_matches = reg.findall(text)
 
@@ -165,7 +228,7 @@ def extract_parameters_from_con(text):
         pole_length = pole_length_matches
         pole_class = pole_length_matches
     else:
-        print("length is none")
+#         print("length is none")
         pole_length = None
         pole_class = None
 
@@ -182,7 +245,7 @@ def extract_parameters_from_con(text):
 def extract_parameters_from_ocl(text):
     # Regular expressions for different formats
     # Order them by priority, as you mentioned    40'/45'-1   45 1
-    pole_length_class_regexes = [
+    pole_length_class_regexes_ocl = [
         re.compile(
             r"Pole\s*Length\s*Class:\s*[345][05]\s*'?\s*\/\s*[12345h]"),
         re.compile(
@@ -214,7 +277,6 @@ def extract_parameters_from_ocl(text):
         re.compile(r"[345][05]\s*'\s*[\-_*]\s*[12345h]?"),
         re.compile(r"[345][05]\s*'?\s*[\-_*]\s*[12345h]?")
     ]
-
     setting_depth_regexes = [re.compile(r"Setting\s*Depth\s*\(ft\)\s*:\s*[6-9][,.]?[05]?\s*'?"),
                              re.compile(
                                  r"Setting?\s*Depth\s*\(ft\)\s*:\s*[6-9][,.]?[05]?\s*'?"),
@@ -245,8 +307,8 @@ def extract_parameters_from_ocl(text):
         bool_at_replace = True
     else:
         bool_at_replace = False
-    pole_length_matches = pole_length_class_regexes[0].findall(text)
-    for reg in pole_length_class_regexes:
+    pole_length_matches = pole_length_class_regexes_ocl[0].findall(text)
+    for reg in pole_length_class_regexes_ocl:
         if (len(pole_length_matches) == 0 or pole_length_matches[0] == ''):
             pole_length_matches = reg.findall(text)
 
@@ -284,23 +346,21 @@ parameters2 = extract_parameters_from_ocl(ocl_text)
 # print("Ocl")
 # print(parameters2)
 
-# print(re.compile(r"[345][05]").findall(parameters))
-# print(re.compile(r"[345][05]").findall(parameters))
-# print(re.compile(r"[12345h]").findall(parameters))
-# print(re.compile(r"[345][05]").findall(parameters2))
-# print(re.compile(r"[12345h]").findall(parameters2))
-
 lenoutputs = re.compile(
     r"[345][05]").findall(parameters['pole_length'][0])
 
-if (len(lenoutputs)  >= 1):
+
+if (len(lenoutputs) == 0):
+    con_pole_length1 = 0
+    con_pole_length2 = 0
+
+if (len(lenoutputs) >= 1):
     con_pole_length1 = float(lenoutputs[0])
-# print(parameters['pole_length'])
+
+
 if (len(lenoutputs) > 1):
-    # print("len is > 1")
     con_pole_length2 = float(lenoutputs[1])
 else:
-    # print("len is <= 1")
     con_pole_length2 = float(con_pole_length1)
 
 con_pole_class = float(re.compile(
@@ -315,57 +375,61 @@ ocl_pole_class = float(re.compile(
 ocl_pole_depth = float(re.compile(
     r"[6-9][,.]?[05]?").findall(parameters2['setting_depth'][0])[0])
 
+est_pole_length = float(re.compile(
+    r"[345][05]").findall(est_pole_length_class[0])[0])
+est_pole_class = float(re.compile(
+    r"[12345h]").findall(est_pole_length_class[0])[-1])
+
+# print(est_pole_class)
+# print(est_pole_length)
+
 at_replace = parameters2['at_replace']
 
 
-bool_for_class = False
-bool_for_depth = False
-bool_for_length = False
+bool_for_class_1_2 = False
+bool_for_depth_1_2 = False
+bool_for_length_1_2 = False
+bool_for_class_2_3 = False
+bool_for_depth_2_3 = False
+bool_for_length_2_3 = False
+
 if (not parameters['setting_depth']):
     # if (con_pole_depth == None):
     if (at_replace):
-        bool_for_depth = True
+        bool_for_depth_1_2 = True
     else:
-        bool_for_depth = False
+        bool_for_depth_1_2 = False
 else:
     if (abs(con_pole_depth - ocl_pole_depth)/ocl_pole_depth <= 0.05):
-        bool_for_depth = True
-
-
-# print(f"con depth: {con_pole_depth}")
-# print(ocl_pole_depth)
-# print(bool_for_depth)
-# print((con_pole_length1 - ocl_pole_length)/ocl_pole_length)
-# print(con_pole_length1)
-# print(con_pole_length2)
-# print(f"class: {con_pole_class}")
-# print(ocl_pole_class)
-# print(ocl_pole_length)
+        bool_for_depth_1_2 = True
 
 
 if (abs(con_pole_length1 - ocl_pole_length)/ocl_pole_length <= 0.05):
-    bool_for_length = True
+    bool_for_length_1_2 = True
 
+if (abs(est_pole_length - ocl_pole_length)/ocl_pole_length <= 0.05):
+    bool_for_length_2_3 = True
 
-# print((con_pole_length2 - ocl_pole_length)/ocl_pole_length)
-# print(ocl_pole_length)
-# print(con_pole_length2)
 
 if (abs(con_pole_length2 - ocl_pole_length)/ocl_pole_length <= 0.05):
-    bool_for_length = True
+    bool_for_length_1_2 = True
+
 
 if (ocl_pole_class == con_pole_class):
-    bool_for_class = True
-print(f"pole length: {bool_for_length}, ")
-print(f"pole class: {bool_for_class}, ")
-print(f"setting depth: {bool_for_depth}, ")
+    bool_for_class_1_2 = True
 
-if (bool_for_class & bool_for_length & bool_for_depth):
+if (est_pole_class == ocl_pole_class):
+    bool_for_class_2_3 = True
+
+print(f"pole length: Con and ocl { bool_for_length_1_2}")
+print(f"pole class: Con and ocl {bool_for_class_1_2}")
+print(f"setting depth: Con and ocl {bool_for_depth_1_2}")
+
+print(f"pole length: Est and ocl { bool_for_length_2_3}")
+print(f"pole class: Est and ocl {bool_for_class_2_3}")
+
+
+if (bool_for_class_1_2 and bool_for_length_1_2 and bool_for_depth_1_2 and bool_for_length_2_3 and bool_for_class_2_3):
     print("PASSED")
 else:
     print("FAILED")
-
-end_time = time.process_time()
-execution_time = end_time - start_time
-
-print(f"Execution time: {execution_time:.6f} seconds")
